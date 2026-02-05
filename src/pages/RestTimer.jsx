@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography, Button, Container, Stack, Paper } from "@mui/material";
-import { TimerIcon } from "../components/Icons";
 
 const PRESETS = [30, 60, 90, 120];
 

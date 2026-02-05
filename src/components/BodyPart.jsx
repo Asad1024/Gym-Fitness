@@ -1,5 +1,5 @@
 import React from "react";
-import { Chip, Box } from "@mui/material";
+import { Chip } from "@mui/material";
 
 const BodyPart = ({ item, setBodyPart, bodyPart }) => {
   const isSelected = bodyPart === item;
