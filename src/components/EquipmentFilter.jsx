@@ -1,11 +1,11 @@
 import React from "react";
-import { Chip, Box } from "@mui/material";
+import { Chip } from "@mui/material";
 
-const BodyPart = ({ item, setBodyPart, bodyPart }) => {
-  const isSelected = bodyPart === item;
+const EquipmentFilter = ({ item, setEquipment, equipment }) => {
+  const isSelected = equipment === item;
 
   const handleClick = () => {
-    setBodyPart(item);
+    setEquipment(item);
     const el = document.getElementById("exercises");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -23,16 +23,16 @@ const BodyPart = ({ item, setBodyPart, bodyPart }) => {
         height: 32,
         borderRadius: 2,
         borderWidth: 1,
-        borderColor: isSelected ? "primary.main" : "divider",
-        bgcolor: isSelected ? "primary.main" : "transparent",
-        color: isSelected ? "primary.contrastText" : "text.primary",
+        borderColor: isSelected ? "secondary.main" : "divider",
+        bgcolor: isSelected ? "secondary.main" : "transparent",
+        color: isSelected ? "secondary.contrastText" : "text.primary",
         "&:hover": {
-          borderColor: "primary.main",
-          bgcolor: isSelected ? "primary.dark" : "action.hover",
+          borderColor: "secondary.main",
+          bgcolor: isSelected ? "secondary.dark" : "action.hover",
         },
       }}
     />
   );
 };
 
-export default BodyPart;
+export default EquipmentFilter;

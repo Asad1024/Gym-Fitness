@@ -1,6 +1,6 @@
 import React from "react";
 import { Stack } from "@mui/material";
-import { InfinitySpin } from "react-loader-spinner";
+import { RingLoader } from "react-spinners";
 
 const Loader = () => (
   <Stack
@@ -8,8 +8,9 @@ const Loader = () => (
     justifyContent="center"
     alignItems="center"
     width="100%"
+    minHeight="260px"
   >
-    <InfinitySpin color="grey" />
+    <RingLoader color="#6366f1" size={60} />
   </Stack>
 );
 

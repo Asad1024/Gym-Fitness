@@ -1,30 +1,41 @@
 import React from "react";
 import { Typography, Box, Stack } from "@mui/material";
-import Loader from "./Loader";
 import HorizontalScrollbar from "./HorizontalScrollbar";
 
 const SimilarExercises = ({ targetMuscleExercises, equipmentExercises }) => {
+  const hasTarget = targetMuscleExercises?.length > 0;
+  const hasEquipment = equipmentExercises?.length > 0;
+
+  if (!hasTarget && !hasEquipment) return null;
+
   return (
-    <Box sx={{ mt: { lg: "100px", xs: "0px" } }}>
-      <Typography
-        sx={{ fontSize: { lg: "44px", xs: "25px" }, ml: "20px" }}
-        fontWeight={700}
-        color="#000"
-        mb="33px"
-      >
-        Similar{" "}
-        <span style={{ color: "#FF2625", textTransform: "capitalize" }}>
-          Target Muscle
-        </span>{" "}
-        exercises
-      </Typography>
-      <Stack direction="row" sx={{ p: 2, position: "relative" }}>
-        {targetMuscleExercises.length !== 0 ? (
-          <HorizontalScrollbar data={targetMuscleExercises} />
-        ) : (
-          <Loader />
-        )}
-      </Stack>
+    <Box sx={{ mt: 6 }}>
+      {hasTarget && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="overline" sx={{ color: "primary.main", fontWeight: 700, letterSpacing: 1.5 }}>
+            Similar target muscle
+          </Typography>
+          <Typography variant="h6" fontWeight={700} sx={{ mt: 0.5, mb: 2, fontSize: "1.15rem" }}>
+            More exercises for the same target
+          </Typography>
+          <Box sx={{ position: "relative", width: "100%", overflow: "hidden" }}>
+            <HorizontalScrollbar data={targetMuscleExercises} compact />
+          </Box>
+        </Box>
+      )}
+      {hasEquipment && (
+        <Box>
+          <Typography variant="overline" sx={{ color: "secondary.main", fontWeight: 700, letterSpacing: 1.5 }}>
+            Same equipment
+          </Typography>
+          <Typography variant="h6" fontWeight={700} sx={{ mt: 0.5, mb: 2, fontSize: "1.15rem" }}>
+            More exercises with same equipment
+          </Typography>
+          <Box sx={{ position: "relative", width: "100%", overflow: "hidden" }}>
+            <HorizontalScrollbar data={equipmentExercises} compact />
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 };

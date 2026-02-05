@@ -1,3 +1,52 @@
+# Gym Fitness
+
+Fitness app with exercise search, body part & equipment filters, and exercise details. Uses the ExerciseDB API when available and falls back to demo data when the API is unreachable.
+
+## Exercise API (RapidAPI)
+
+The app uses **ExerciseDB** on RapidAPI. You must **subscribe** to the API (free tier available) to get live exercises and GIFs.
+
+### "You are not subscribed to this API"
+
+This means your RapidAPI key is not subscribed to ExerciseDB. Fix it:
+
+1. Go to **[ExerciseDB on RapidAPI](https://rapidapi.com/justin-WFnsXH_t6/api/exercisedb)**.
+2. Click **"Subscribe to Test"** or **"Pricing"** and choose a plan (e.g. **Basic** for free tier).
+3. Copy your **RapidAPI key** from the same page (or from [RapidAPI Dashboard](https://rapidapi.com/developer/dashboard)).
+4. In the project root, create or edit `.env`:
+   ```env
+   REACT_APP_RAPIDAPI_KEY=your_rapidapi_key_here
+   ```
+5. Restart the dev server (`npm start`).
+
+### Other API errors
+
+- **"The API is unreachable"** – ExerciseDB’s server may be down. The app falls back to demo data.
+- **"Endpoint does not exist"** – Often the same as not subscribed or API down; app uses demo data.
+- **Quota exceeded** – Check usage on your [RapidAPI Dashboard](https://rapidapi.com/developer/dashboard); wait or upgrade.
+
+### Without a subscription
+
+The app still runs using **demo exercises** (search, filters, details). You only get live data and exercise GIFs when subscribed and the API is reachable.
+
+## Related videos (RapidAPI)
+
+The app shows **related YouTube videos** on each exercise page—titles, thumbnails, and links that open on YouTube. It uses the **channel/search** endpoint (POST) of `youtube-search-and-download.p.rapidapi.com` to search **within a channel** by exercise name. **Nothing is downloaded.**
+
+The app uses the **same** `.env` key (`REACT_APP_RAPIDAPI_KEY`); you must **subscribe to this API** as well. Optionally set `REACT_APP_YOUTUBE_CHANNEL_ID` in `.env` to search a different YouTube channel (default is used if unset).
+
+### Where to get it on RapidAPI
+
+1. Use the **same** RapidAPI key as for ExerciseDB (one key for all subscribed APIs).
+2. Go to **[RapidAPI Hub](https://rapidapi.com/hub)** and search for **YouTube Search**.
+3. Open the API whose host is **youtube-search-and-download.p.rapidapi.com** (check the API’s code snippet for `x-rapidapi-host`).
+4. Click **Subscribe to Test** or **Pricing** and choose a plan (e.g. free tier).
+5. Your existing `REACT_APP_RAPIDAPI_KEY` in `.env` will then work for the videos section. Restart the dev server after any `.env` change.
+
+If videos still don’t show, the “Videos” section on the exercise detail page has a short guide and a link to RapidAPI Hub.
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

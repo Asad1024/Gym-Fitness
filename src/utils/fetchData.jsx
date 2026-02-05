@@ -1,23 +1,111 @@
+const RAPIDAPI_KEY = process.env.REACT_APP_RAPIDAPI_KEY || "eb2f9fd2a5msh4d995bd074b18dbp165ad2jsn24a028dd566b";
+
+export const EXERCISEDB_BASE = "https://exercisedb.p.rapidapi.com";
+
+const exerciseHeaders = {
+  "x-rapidapi-key": RAPIDAPI_KEY,
+  "x-rapidapi-host": "exercisedb.p.rapidapi.com",
+};
+
+const imageBlobUrlCache = new Map();
+
+/**
+ * Fetch exercise GIF using headers (x-rapidapi-host, x-rapidapi-key). Returns blob URL.
+ * resolution: 360 for larger/HD quality (API may support 180, 360, 480).
+ */
+export const fetchExerciseImage = async (exerciseId, resolution = "360") => {
+  const cacheKey = `${exerciseId}-${resolution}`;
+  const cached = imageBlobUrlCache.get(cacheKey);
+  if (cached) return cached;
+  const url = `${EXERCISEDB_BASE}/image?exerciseId=${encodeURIComponent(exerciseId)}&resolution=${resolution}`;
+  const res = await fetch(url, { method: "GET", headers: exerciseHeaders });
+  if (!res.ok) throw new Error(`Image ${res.status}`);
+  const blob = await res.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  imageBlobUrlCache.set(cacheKey, blobUrl);
+  return blobUrl;
+};
+
 export const exerciseOptions = {
   method: "GET",
-  url: "https://exercisedb.p.rapidapi.com/exercises/bodyPartList",
-  headers: {
-    "X-RapidAPI-Key": "dcf06bd973msh6bccc04f1d5a66ep11fe99jsnac2c7f1da9ff",
-    "X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
-  },
+  headers: exerciseHeaders,
 };
 
 export const youtubeOptions = {
   method: "GET",
   headers: {
-    "X-RapidAPI-Key": "dcf06bd973msh6bccc04f1d5a66ep11fe99jsnac2c7f1da9ff",
-    "X-RapidAPI-Host": "youtube-search-and-download.p.rapidapi.com",
+    "x-rapidapi-key": RAPIDAPI_KEY,
+    "x-rapidapi-host": "youtube-search-and-download.p.rapidapi.com",
   },
 };
 
-export const fetchData = async (url, options) => {
-  const res = await fetch(url, options);
-  const data = await res.json();
+const YOUTUBE_SEARCH_URL = "https://youtube-search-and-download.p.rapidapi.com/search";
+const YOUTUBE_CHANNEL_SEARCH_URL = "https://youtube-search-and-download.p.rapidapi.com/channel/search";
+const DEFAULT_YOUTUBE_CHANNEL_ID = process.env.REACT_APP_YOUTUBE_CHANNEL_ID || "UChPvQ8hfrSW1EAbtBWjis0g";
 
+const youtubePostHeaders = {
+  "Content-Type": "application/json",
+  "x-rapidapi-key": RAPIDAPI_KEY,
+  "x-rapidapi-host": "youtube-search-and-download.p.rapidapi.com",
+};
+
+/** Normalize search/channel API response to { video: { videoId, title, thumbnails, channelName } }[] */
+const normalizeVideoItems = (raw) => {
+  const list = Array.isArray(raw?.contents) ? raw.contents : Array.isArray(raw?.videos) ? raw.videos : Array.isArray(raw) ? raw : [];
+  return list.map((item) => {
+    const v = item?.video ?? item;
+    const videoId = v?.videoId ?? v?.id ?? null;
+    const title = v?.title ?? "";
+    const thumbnails = v?.thumbnails ?? (v?.thumbnail ? [{ url: v.thumbnail }] : []);
+    const channelName = v?.channelName ?? v?.channelTitle ?? v?.channel?.title ?? "";
+    return { video: { videoId, title, thumbnails, channelName } };
+  }).filter((item) => item.video.videoId);
+};
+
+/** GET /search – search all YouTube by query. Returns normalized array. */
+const fetchYouTubeSearch = async (query) => {
+  const url = `${YOUTUBE_SEARCH_URL}?query=${encodeURIComponent(query)}`;
+  const res = await fetch(url, { method: "GET", headers: youtubeOptions.headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || `YouTube API ${res.status}`);
+  return normalizeVideoItems(data);
+};
+
+/** POST channel/search – search within a channel. Returns normalized array. */
+const fetchYouTubeChannelSearch = async (query, channelId = DEFAULT_YOUTUBE_CHANNEL_ID, next = "") => {
+  const res = await fetch(YOUTUBE_CHANNEL_SEARCH_URL, {
+    method: "POST",
+    headers: youtubePostHeaders,
+    body: JSON.stringify({ id: channelId, query, next }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || `YouTube API ${res.status}`);
+  return normalizeVideoItems(data);
+};
+
+/**
+ * Fetch related videos: try GET /search first, then POST channel/search if empty or fails.
+ * Returns array of { video: { videoId, title, thumbnails, channelName } } for ExerciseVideos.
+ */
+export const fetchExerciseVideos = async (exerciseName) => {
+  const query = `${(exerciseName || "").trim()} exercise`.trim() || "exercise";
+  try {
+    const list = await fetchYouTubeSearch(query);
+    if (list.length > 0) return list;
+  } catch (_) {}
+  try {
+    return await fetchYouTubeChannelSearch(query);
+  } catch (_) {
+    return [];
+  }
+};
+
+export const fetchData = async (url, options) => {
+  const { method = "GET", headers, body } = options || {};
+  const res = await fetch(url, { method, headers, body });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data?.message || `API error ${res.status}`);
+  }
   return data;
 };

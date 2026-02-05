@@ -1,140 +1,274 @@
-body {
-  font-family: "Josefin Sans";
-  background-color: #fffafb;
+:root {
+  --color-primary: #6366f1;
+  --color-primary-light: #818cf8;
+  --color-primary-dark: #4f46e5;
+  --color-secondary: #f59e0b;
+  --color-secondary-light: #fbbf24;
+  --color-bg: #f1f5f9;
+  --color-bg-paper: #ffffff;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.1);
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  --color-primary: #818cf8;
+  --color-primary-light: #a5b4fc;
+  --color-primary-dark: #6366f1;
+  --color-secondary: #fbbf24;
+  --color-secondary-light: #fcd34d;
+  --color-bg: #0f172a;
+  --color-bg-paper: #1e293b;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.45);
 }
 
 * {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
 }
 
+body {
+  font-family: "Plus Jakarta Sans", "Outfit", "DM Sans", system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 10px;
+  height: 10px;
 }
 
-.right-arrow,
-.left-arrow {
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Filter scroll arrows */
+.scroll-arrow {
   cursor: pointer;
-  background: transparent;
-  outline: none;
-  border: none;
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: #ff2625;
-  font-size: 25px;
-  border-radius: 4px;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-bg-paper);
+  color: var(--color-primary);
+  border: 2px solid var(--color-border);
+  transition: var(--transition-smooth);
+  box-shadow: var(--shadow-sm);
+}
+
+.scroll-arrow:hover {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+}
+
+/* Exercise cards - home grid */
+.exercise-card {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-paper);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  height: 100%;
+}
+
+.exercise-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary);
+}
+
+.exercise-card .card-media-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.exercise-card .card-media-wrap::after {
+  content: "";
   position: absolute;
-  bottom: -20px;
-  right: 80px;
-  transform: scale(1, 1);
-  transition: 0.3s all ease-in-out;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 45%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.right-arrow {
-  right: 140px;
+.exercise-card:hover .card-media-wrap::after {
+  opacity: 1;
 }
 
-.right-arrow:hover,
-.left-arrow:hover {
-  transform: scale(1.3, 1.3);
+.exercise-card img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  background: var(--color-bg);
+  transition: transform 0.4s ease;
+}
+
+.exercise-card:hover img {
+  transform: scale(1.05);
+}
+
+.exercise-card:hover .card-hover-overlay {
+  opacity: 1;
+}
+
+/* Compact exercise cards (detail page similar exercises) */
+.exercise-card--compact {
+  height: 100%;
+}
+.exercise-card--compact img {
+  height: 180px;
+  object-fit: cover;
+}
+.exercise-card--compact:hover {
+  transform: translateY(-4px);
+}
+
+/* Filter / body part cards - smooth appearance */
+.body-part-card,
+.filter-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+
+.body-part-card:hover,
+.filter-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Detail page - GIF container */
+.detail-gif-wrap {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  border: 2px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.detail-image {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  object-fit: cover;
+  display: block;
+}
+
+/* Video cards on detail page */
+.exercise-video-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg-paper);
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.exercise-video-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary);
+}
+
+.exercise-video-card img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+.exercise-video-card .play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.exercise-video-card:hover .play-overlay {
+  opacity: 1;
+}
+
+.search-btn-wrap {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .react-horizontal-scrolling-menu--wrapper {
   width: 100%;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
-.detail-image {
-  width: 729px;
-  height: 742px;
+.react-horizontal-scrolling-menu--scroll-container {
+  gap: 14px;
+  padding: 4px 0;
 }
 
-.hero-banner-img {
-  position: absolute;
-  right: 40px;
-  top: 60px;
-  width: 600px;
-  height: 700px;
-  margin-top: -330px;
+/* Filter section smooth expand */
+.filters-section {
+  transition: opacity 0.35s ease, transform 0.35s ease;
 }
 
-.exercise-card {
-  width: 400px;
-  height: 445px;
-  background: #fff;
-  border-top: 4px solid #ff2625;
-  border-bottom-left-radius: 20px;
-  text-decoration: none;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  padding-bottom: 10px;
-  transform: scale(1, 1);
-  transition: 0.3s all ease-in-out;
-}
-
-.exercise-card img {
-  height: 326px;
-}
-
-.bodyPart-card {
-  transform: scale(1, 1);
-  transition: 0.3s all ease-in-out;
-}
-
-.exercise-card:hover,
-.bodyPart-card:hover {
-  transform: scale(1.1, 1.1);
-}
-
-.search-btn:hover {
-  color: #ff2625 !important;
-  border: 1px solid #ff2625 !important;
-}
-
-.exercise-video {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 387px;
-  height: 381px;
-  text-decoration: none;
-}
-
-@media screen and (max-width: 1200px) {
+@media (max-width: 1200px) {
   .detail-image {
-    width: 300px;
-    height: 300px;
+    max-width: 100%;
   }
-
-  .react-horizontal-scrolling-menu--scroll-container {
-    width: 500px;
-  }
-
-  .left-arrow,
-  .right-arrow {
-    position: static !important;
-  }
-
-  .hero-banner-img {
-    display: none;
-  }
-
-  .exercise-card {
-    width: 320px;
-  }
-
-  .exercise-video {
-    width: 320px;
-    height: 300px;
+  .exercise-card img {
+    height: 240px;
   }
 }
 
-@media screen and (max-width: 400px) {
-  .exercise-card {
-    width: 280px;
+@media (max-width: 600px) {
+  .exercise-card img {
+    height: 220px;
+  }
+  .scroll-arrow {
+    width: 38px;
+    height: 38px;
   }
 }

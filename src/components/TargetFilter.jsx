@@ -1,11 +1,11 @@
 import React from "react";
-import { Chip, Box } from "@mui/material";
+import { Chip } from "@mui/material";
 
-const BodyPart = ({ item, setBodyPart, bodyPart }) => {
-  const isSelected = bodyPart === item;
+const TargetFilter = ({ item, setTarget, target }) => {
+  const isSelected = target === item;
 
   const handleClick = () => {
-    setBodyPart(item);
+    setTarget(item);
     const el = document.getElementById("exercises");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -35,4 +35,4 @@ const BodyPart = ({ item, setBodyPart, bodyPart }) => {
   );
 };
 
-export default BodyPart;
+export default TargetFilter;
