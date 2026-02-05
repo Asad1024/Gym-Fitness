@@ -16,7 +16,6 @@ import {
 import {
   MenuIcon,
   CloseIcon,
-  GymLogo,
   DarkModeIcon,
   LightModeIcon,
 } from "./Icons";
@@ -115,17 +114,14 @@ const Navbar = () => {
                   alignItems: "center",
                   textDecoration: "none",
                   color: "inherit",
-                  gap: 10,
                 }}
               >
-                <GymLogo />
                 <Typography
                   variant="h6"
                   fontWeight={700}
                   sx={{
                     fontSize: "1.1rem",
                     letterSpacing: "-0.02em",
-                    display: { xs: "none", sm: "block" },
                   }}
                 >
                   Gym Fitness
