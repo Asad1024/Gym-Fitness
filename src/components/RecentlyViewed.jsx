@@ -19,7 +19,7 @@ const RecentlyViewed = () => {
   if (!recent.length) return null;
 
   return (
-    <Box sx={{ mb: 3 }}>
+    <Box sx={{ mt: { xs: 5, sm: 8 }, mb: 3 }}>
       <Typography variant="overline" sx={{ color: "primary.main", fontWeight: 700, letterSpacing: 1.5, display: "block", mb: 0.5 }}>
         Pick up where you left off
       </Typography>

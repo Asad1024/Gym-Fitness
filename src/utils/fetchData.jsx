@@ -1,4 +1,4 @@
-const RAPIDAPI_KEY = process.env.REACT_APP_RAPIDAPI_KEY || "eb2f9fd2a5msh4d995bd074b18dbp165ad2jsn24a028dd566b";
+const RAPIDAPI_KEY = process.env.REACT_APP_RAPIDAPI_KEY || "";
 
 export const EXERCISEDB_BASE = "https://exercisedb.p.rapidapi.com";
 
@@ -8,6 +8,24 @@ const exerciseHeaders = {
 };
 
 const imageBlobUrlCache = new Map();
+
+// Cache ExerciseDB GET responses to reduce "Too many requests" on free tier (5 min TTL).
+const CACHE_TTL_MS = 5 * 60 * 1000;
+const apiCache = new Map();
+
+const getCached = (url) => {
+  const entry = apiCache.get(url);
+  if (!entry) return null;
+  if (Date.now() - entry.at > CACHE_TTL_MS) {
+    apiCache.delete(url);
+    return null;
+  }
+  return entry.data;
+};
+
+const setCached = (url, data) => {
+  apiCache.set(url, { data, at: Date.now() });
+};
 
 /**
  * Fetch exercise GIF using headers (x-rapidapi-host, x-rapidapi-key). Returns blob URL.
@@ -102,10 +120,29 @@ export const fetchExerciseVideos = async (exerciseName) => {
 
 export const fetchData = async (url, options) => {
   const { method = "GET", headers, body } = options || {};
+  const isGet = (method || "GET").toUpperCase() === "GET";
+  const isExerciseDb = url.startsWith(EXERCISEDB_BASE);
+
+  if (isGet && isExerciseDb) {
+    const cached = getCached(url);
+    if (cached != null) return cached;
+  }
+
   const res = await fetch(url, { method, headers, body });
   const data = await res.json().catch(() => ({}));
+
+  if (res.status === 429) {
+    if (isGet && isExerciseDb) {
+      const stale = getCached(url);
+      if (stale != null) return stale;
+    }
+    throw new Error(data?.message || "Too many requests. Try again in a few minutes.");
+  }
+
   if (!res.ok) {
     throw new Error(data?.message || `API error ${res.status}`);
   }
+
+  if (isGet && isExerciseDb) setCached(url, data);
   return data;
 };

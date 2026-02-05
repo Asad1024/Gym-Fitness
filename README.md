@@ -45,6 +45,19 @@ The app uses the **same** `.env` key (`REACT_APP_RAPIDAPI_KEY`); you must **subs
 
 If videos still don’t show, the “Videos” section on the exercise detail page has a short guide and a link to RapidAPI Hub.
 
+## Deploy on Netlify
+
+1. Connect your GitHub repo to Netlify.
+2. Build command: `npm run build` · Publish directory: `build`.
+3. In **Site settings → Environment variables**, add:
+
+   | Key | Value |
+   |-----|--------|
+   | `REACT_APP_RAPIDAPI_KEY` | Your RapidAPI key (same as ExerciseDB + YouTube) |
+   | `REACT_APP_YOUTUBE_CHANNEL_ID` | (Optional) YouTube channel ID, e.g. `UChPvQ8hfrSW1EAbtBWjis0g` |
+
+4. Trigger a new deploy after saving the variables.
+
 ---
 
 # Getting Started with Create React App

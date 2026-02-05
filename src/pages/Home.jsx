@@ -15,14 +15,16 @@ const Home = () => {
   const [equipment, setEquipment] = useState("all");
   const [target, setTarget] = useState("all");
   const [exercises, setExercises] = useState([]);
-  const [apiError, setApiError] = useState(false);
+  const [apiError, setApiError] = useState(null);
   const [bannerOpen, setBannerOpen] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     fetchData(`${EXERCISEDB_BASE}/exercises/bodyPartList`, exerciseOptions)
-      .then(() => { if (!cancelled) setApiError(false); })
-      .catch(() => { if (!cancelled) setApiError(true); });
+      .then(() => { if (!cancelled) setApiError(null); })
+      .catch((err) => {
+        if (!cancelled) setApiError(err?.message || String(err));
+      });
     return () => { cancelled = true; };
   }, []);
 
@@ -42,9 +44,9 @@ const Home = () => {
       >
         <RecentlyViewed key={location.key} />
         <WorkoutOfTheDay />
-        <Collapse in={apiError && bannerOpen}>
+        <Collapse in={Boolean(apiError) && bannerOpen}>
           <Alert
-            severity="info"
+            severity={apiError && String(apiError).toLowerCase().includes("too many requests") ? "warning" : "info"}
             action={
               <IconButton size="small" onClick={() => setBannerOpen(false)} aria-label="close">
                 <CloseIcon />
@@ -54,17 +56,27 @@ const Home = () => {
               mb: 2,
               borderRadius: 3,
               border: "2px solid",
-              borderColor: "primary.light",
+              borderColor: apiError && String(apiError).toLowerCase().includes("too many requests") ? "warning.main" : "primary.light",
             }}
           >
-            <AlertTitle>Using demo exercises</AlertTitle>
-            You are not subscribed to the ExerciseDB API (or the API is unavailable).{" "}
-            <strong>
-              <a href="https://rapidapi.com/justin-WFnsXH_t6/api/exercisedb" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>
-                Subscribe on RapidAPI
-              </a>
-            </strong>{" "}
-            and add <code>REACT_APP_RAPIDAPI_KEY</code> to your <code>.env</code>.
+            <AlertTitle>
+              {apiError && String(apiError).toLowerCase().includes("too many requests")
+                ? "Rate limit reached"
+                : "Using demo exercises"}
+            </AlertTitle>
+            {apiError && String(apiError).toLowerCase().includes("too many requests")
+              ? "The free ExerciseDB API has a limited number of requests per day. Requests are cached for 5 minutes to reduce usage. Try again later or subscribe to a higher tier on RapidAPI for more quota."
+              : "You are not subscribed to the ExerciseDB API (or the API is unavailable). "}
+            {(!apiError || !String(apiError).toLowerCase().includes("too many requests")) && (
+              <>
+                <strong>
+                  <a href="https://rapidapi.com/justin-WFnsXH_t6/api/exercisedb" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>
+                    Subscribe on RapidAPI
+                  </a>
+                </strong>{" "}
+                and add <code>REACT_APP_RAPIDAPI_KEY</code> to your <code>.env</code>.
+              </>
+            )}
           </Alert>
         </Collapse>
         <Paper
